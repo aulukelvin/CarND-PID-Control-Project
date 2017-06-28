@@ -2,3 +2,9 @@
 build
 tags
 .editorconfig
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+nbproject/
+pid
