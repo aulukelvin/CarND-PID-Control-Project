@@ -21,12 +21,20 @@ My tuning process has two steps:
 
 * Fine tuning. I started the tuning at 30mph and found out the model doesn't works well at higher speed. Measure the performance with bare eyes seems not enough to evaluate the performance. So I did simple mean and variance analysis of the CTE and got a better model. The best performance I got is mean 0.227953445 and variance 0.214353542.
 
-## Further improvement
+## Further enhancement
 Both the fine tuned model and the fine tuning process seem stopped working if the speed is over 50mph. Then I add a control of the speed if the CTE is too high. The function I used is like the following:
 
 ```C++
-  speed_pid.UpdateError(speed - set_speed * (4.5 - std::abs(cte))/4.5); // slow down when the cte is high
+    speed_pid.UpdateError(speed - set_speed * (4.5 - std::abs(cte))/4.5); // slow down when the cte is high
 ```
 
 The speed control can help a lot in high speed driving. The highest speed I have tried is 65mph. The car can runs through the whole track at that speed but the driving is already very unstable so I decrease the speed setting to 55mph as final submit.
 
+## Discussion
+Normally the I controller should based on the integral of the error from time 0 to t. But I just wondering if there's a bump of big error then the I controller will tend to overshoot for a long period to make the integral even. So in my code I deliberately tried to make the I controller slightly more focus on the recent error and slowly forget the unhappiness in the past. My code is like the following:
+```C++
+    i_error *= 0.99;
+    i_error += cte;
+```
+The fading effect is very modest because the impact of an error will decrease to 5% after 300 steps.
+ 
