@@ -40,7 +40,7 @@ std::string hasData(std::string s) {
 int main() {
     uWS::Hub h;
 
-    double set_speed = 45;
+    double set_speed = 50;
     double throttle = 0;
     int i = 0;
 
