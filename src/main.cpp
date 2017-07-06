@@ -40,8 +40,8 @@ std::string hasData(std::string s) {
 int main() {
     uWS::Hub h;
 
-    double set_speed = 50;
-    double throttle = 0;
+    double set_speed = 60.0;
+    double throttle = 0.0;
     int i = 0;
 
     PID steering_pid;
@@ -62,7 +62,7 @@ int main() {
                     // j[1] is the data JSON object
                     double cte = std::stod(j[1]["cte"].get<std::string>());
                     double speed = std::stod(j[1]["speed"].get<std::string>());
-                    double angle = std::stod(j[1]["steering_angle"].get<std::string>());
+                    // double angle = std::stod(j[1]["steering_angle"].get<std::string>());
                     double steer_value;
                     /*
                      * TODO: Calcuate steering value here, remember the steering value is
@@ -73,7 +73,7 @@ int main() {
 
                     steering_pid.UpdateError(cte);
                     steer_value = -steering_pid.TotalError();
-                    speed_pid.UpdateError(speed - set_speed);
+                    speed_pid.UpdateError(speed - set_speed * (4.5 - std::abs(cte))/4.5); // slow down when the cte is high
                     throttle = -speed_pid.TotalError();
                     // DEBUG
                     // std::cout << "CTE, "<< i++ <<", " << cte << ", Steering Value:, " << steer_value << std::endl;
