@@ -38,3 +38,7 @@ Normally the I controller should based on the integral of the error from time 0 
 ```
 The fading effect is very modest because the impact of an error will decrease to 5% after 300 steps.
  
+## PS
+After successfully passed this project I realized that the speed control can be better if putting the delta of the cte into consideration, i.e. slow down the speed evern further when the cte is increasing and speed up when the cte is decreasing. This strategy is just like how people driving. I added this into the code and found out the car can safely ran through the track at 65mph.
+
+Then I added the measured angle into the model. The calculated steering value was purely based on the PID controller and the cte as input. Suppose the car is facing along with the track center line but has a cte to correct, then in the process of the PID controller correcting the cte, the car's driving angle is actually more and more increasing and reachs to the maximum when the car's cte is equals zero. So the driving angle is sorts of integral of the previous operations which can cause jittering effect of the car driving. So I deducted the measured driving angle from the steering_value and found out the car can drive significantly smoother. My final code can run at 68mph.
