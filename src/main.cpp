@@ -40,16 +40,17 @@ std::string hasData(std::string s) {
 int main() {
     uWS::Hub h;
 
-    double set_speed = 55.0;
+    double set_speed = 65.0;
     double throttle = 0.0;
+    double pre_cte = 0;
     int i = 0;
 
     PID steering_pid;
     PID speed_pid;
     // Initialize the pid variable.
-    steering_pid.Init(0.24, 3e-4, 5.5);
+    steering_pid.Init(0.24, 3e-4, 6.0);
     speed_pid.Init(0.05, 1e-2, 0.6);
-    h.onMessage([&steering_pid, &speed_pid, &set_speed, &throttle, &i](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+    h.onMessage([&steering_pid, &speed_pid, &set_speed, &throttle, &i, &pre_cte](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
         // "42" at the start of the message means there's a websocket message event.
         // The 4 signifies a websocket message
         // The 2 signifies a websocket event
@@ -73,7 +74,8 @@ int main() {
 
                     steering_pid.UpdateError(cte);
                     steer_value = -steering_pid.TotalError();
-                    speed_pid.UpdateError(speed - set_speed * (4.5 - std::abs(cte))/4.5); // slow down when the cte is high
+                    speed_pid.UpdateError(speed - set_speed * (4.5 - 2 * std::abs(cte) + pre_cte) / 4.5); // slow down when the cte is high
+                    pre_cte = std::abs(cte);
                     throttle = -speed_pid.TotalError();
                     // DEBUG
                     // std::cout << "CTE, "<< i++ <<", " << cte << ", Steering Value:, " << steer_value << std::endl;
